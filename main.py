@@ -1,41 +1,37 @@
-import pyttsx3  # pip install pyttsx3
-import speech_recognition as sr  # pip install speechRecognition
+import pyttsx3
+import speech_recognition as sr 
 import datetime
-import wikipedia  # pip install wikipedia
+import wikipedia
 import webbrowser
-import os
-import smtplib
+import win32gui, win32con
+from youtubesearchpython import VideosSearch
+
+
+
+wind = win32gui.GetForegroundWindow()
+
+edge_path="C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+webbrowser.register('edge', None, webbrowser.BackgroundBrowser(edge_path))
+
+
+
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 
 # print(voices)
 # for male
-engine.setProperty('voice', voices[0].id)
-
-# for female
-# engine.setProperty('voice', voices[1].id)
-
+engine.setProperty('voice', voices[1].id)
+engine.setProperty('rate', 190)
+# Set Volume
+engine.setProperty('volume', 1.0)
 
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
 
-def wishMe():
-    hour = int(datetime.datetime.now().hour)
-    if hour >= 0 and hour < 12:
-        speak("Good Morning!")
-
-    elif hour >= 12 and hour < 18:
-        speak("Good Afternoon!")
-
-    else:
-        speak("Good Evening!")
-
-    speak("I am Jarvis Sir. Please tell me how may I help you")
-
-
+# resive commends 
 def takeCommand():
     # It takes microphone input from the user and returns string output
 
@@ -58,100 +54,98 @@ def takeCommand():
     return query
 
 
-def sendEmail(to, content):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login('youremail@gmail.com', 'your-password')
-    server.sendmail('youremail@gmail.com', to, content)
-    server.close()
+
+
+
+
+
+
+# Wish me 
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 0 and hour < 12:
+        speak("Good Morning!")
+
+    elif hour >= 12 and hour < 18:
+        speak("Good Afternoon!")
+
+    else:
+        speak("Good Evening!")
+
+    speak("I am jenni Sir. Please tell me how may I help you")
+
 
 
 if __name__ == "__main__":
     wishMe()
     while True:
-        # if 1:
         query = takeCommand().lower()
 
-        # Logic for executing tasks based on query
-        if 'wikipedia' in query:
-            speak('Searching Wikipedia...')
+        if 'wikipedia' in query or 'what is' in query or 'who is' in query:
+            print('Searching Wikipedia...')
             query = query.replace("wikipedia", "")
             results = wikipedia.summary(query, sentences=2)
             speak("sir,")
             print(results)
             speak(results)
 
-        elif 'open youtube' in query:
-            webbrowser.open("youtube.com")
-
-        elif 'open google' in query:
-            webbrowser.open("google.com")
-
-        elif 'open stackoverflow' in query:
-            webbrowser.open("stackoverflow.com")
-
-        elif 'open github' in query:
-            webbrowser.open("github.com")
-
-        elif 'open facebook' in query:
-            webbrowser.open("facebook.com")
-
-        # test me
-        elif 'who is' in query:
-            speak('Searching Wikipedia...')
-            query = query.replace("who is", "")
-            resultsw = wikipedia.summary(query, sentences=2)
-            speak("sir,")
-            print(resultsw)
-            speak(resultsw)
-
-        elif 'what is' in query:
-            speak('Searching Wikipedia...')
-            query = query.replace("what is", "")
-            resultsw = wikipedia.summary(query, sentences=2)
-            speak("sir,")
-            print(resultsw)
-            speak(resultsw)
-
-        elif 'how to' in query:
-            speak('Searching ...')
-            query = query.replace("how to", "")
-            resultsw = wikipedia.summary(query, sentences=2)
-            speak("sir,")
-            print(resultsw)
-            speak(resultsw)
-            # test me end
-
-        elif 'play music' in query:
-            music_dir = ''  # added  misic dir location
-            songs = os.listdir(music_dir)
-            print(songs)
-            os.startfile(os.path.join(music_dir, songs[0]))
+        elif 'exit' in query:
+            speak("Thank You sir good bye.")
+            exit()
 
         elif 'the time' in query:
-            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            strTime = datetime.datetime.now().strftime("%I %M %p").replace('0', ' ')
+            print("Time : "+strTime)
+
             speak(f"Sir, the time is {strTime}")
 
-        elif 'open code' in query:
-            # added vscode exe locaion
-            codePath = "C:\\Users\\User\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-            os.startfile(codePath)
+        elif 'open google' in query:
+            speak('opening google.')
+            webbrowser.get('edge').open('http://www.google.com')
 
-        elif 'who are you' in query:
-            speak("i am your work partner. sir, i work for you.")
+        elif 'search' in query or 'on google' in query:
+            query = query.replace("search", "")
+            query = query.replace("google", "")
+            webbrowser.get('edge').open('http://www.google.com/search?q='+query)
+            speak('Searching.')
 
-        elif 'exit' in query:
-            speak("ok sir. good bye.")
-            quit()
+        elif 'open youtube' in query:
+            speak('opening youtube')
+            webbrowser.get('edge').open('http://www.youtube.com')
 
-        elif 'send email name' in query:
-            try:
-                speak("What should I say?")
-                content = takeCommand()
-                to = "yourEmail@gmail.com"
-                sendEmail(to, content)
-                speak("Email has been sent!")
-            except Exception as e:
-                print(e)
-                speak("Sorry my sir. I am not able to send this email")
+        elif 'my channel' in query or 'my youtube channel' in  query or 'youtube studio' in query:
+            webbrowser.get('edge').open('https://studio.youtube.com/')
+            speak('Sir, this is your Youtube channel Dashbord')
+
+        elif 'open facebook' in query:
+            speak('opening facebook')
+            webbrowser.get('edge').open('http://www.facebook.com')
+
+        elif 'open instagram' in query:
+            speak('opening instagram')
+            webbrowser.get('edge').open('http://www.instagram.com')
+
+        elif 'open freelancer.com' in query or 'open freelancer' in query:
+            speak('ok sir, i opening freelancer site')
+            webbrowser.get('edge').open('http://www.freelancer.com')
+
+        elif 'minimise' in query or 'window hide' in query:
+            speak('ok sir')
+            win32gui.ShowWindow(wind, win32con.SW_MINIMIZE)
+
+        elif 'maximize' in query or 'window show' in query:
+            speak('sure.')
+            win32gui.ShowWindow(wind, win32con.SW_MAXIMIZE)
+
+        elif 'play' in query or 'song' in query:
+            query = query.replace("play", "")
+            query = query.replace("song", "")
+            query = query.replace("search", "")
+            query = query.replace("youtube", "")
+            query = query.replace("search", "")
+            query = query.replace("on", "")
+            videosSearch = VideosSearch(query, limit = 1)
+            yt = videosSearch.result()['result'][0]['link']
+            webbrowser.get('edge').open(yt)
+
+
