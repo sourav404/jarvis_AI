@@ -4,4 +4,5 @@ pip install datetime
 pip install wikipedia
 pip install webbrowser
 pip install os
-pip install smtplib
+pip install youtube-search-python
+pip install pyaudio
